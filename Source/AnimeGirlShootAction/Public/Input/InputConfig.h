@@ -6,7 +6,6 @@
 #include "InputConfig.generated.h"
 
 class UInputAction;
-struct FGameplayTag;
 
 USTRUCT(BlueprintType)
 struct FTaggedInputAction
@@ -29,7 +28,7 @@ class ANIMEGIRLSHOOTACTION_API UInputConfig : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	//UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure)
 	const UInputAction* FindInputActionByTag(const FGameplayTag& InputTag) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputAction"))
