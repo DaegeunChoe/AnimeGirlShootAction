@@ -1,12 +1,14 @@
 #include "Character/AnimeGirlCharacter.h"
 #include "Character/AnimeGirlPlayerController.h"
 #include "Input/AnimeGirlEnhancedInputComponent.h"
+#include "AbilitySystemComponent.h"
 
 
 AAnimeGirlCharacter::AAnimeGirlCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 }
 
 void AAnimeGirlCharacter::BeginPlay()
@@ -33,6 +35,11 @@ void AAnimeGirlCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 			&AAnimeGirlCharacter::InputPressed,
 			&AAnimeGirlCharacter::InputReleased);
 	}
+}
+
+UAbilitySystemComponent* AAnimeGirlCharacter::GetAbilitySystemComponent() const
+{
+	return ASC;
 }
 
 void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGameplayTag tag)
