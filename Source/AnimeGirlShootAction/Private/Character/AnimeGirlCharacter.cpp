@@ -40,7 +40,7 @@ void AAnimeGirlCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	UAnimeGirlEnhancedInputComponent* AnimeGirlInputComponent = Cast<UAnimeGirlEnhancedInputComponent>(PlayerInputComponent);
 	AAnimeGirlPlayerController* AnimeGirlPlayerController = Cast<AAnimeGirlPlayerController>(GetController());
 
-	if (InputComponent && AnimeGirlPlayerController)
+	if (AnimeGirlInputComponent && AnimeGirlPlayerController)
 	{
 		AnimeGirlInputComponent->BindTaggedActions(
 			AnimeGirlPlayerController->InputConfig,
