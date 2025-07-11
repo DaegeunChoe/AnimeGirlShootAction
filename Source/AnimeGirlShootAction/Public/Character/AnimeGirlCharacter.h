@@ -4,6 +4,9 @@
 #include "GameFramework/Character.h"
 #include "AnimeGirlCharacter.generated.h"
 
+struct FInputActionValue;
+struct FGameplayTag;
+
 UCLASS()
 class ANIMEGIRLSHOOTACTION_API AAnimeGirlCharacter : public ACharacter
 {
@@ -17,5 +20,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:
+private:
+	void InputPressed(const FInputActionValue& InputValue, FGameplayTag tag);
+	void InputReleased(const FInputActionValue& InputValue, FGameplayTag tag);
 };
