@@ -2,7 +2,8 @@
 #include "Character/AnimeGirlPlayerController.h"
 #include "Input/AnimeGirlEnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
-
+#include "Ability/AbilitySet.h"
+#include "Abilities/GameplayAbility.h"
 
 AAnimeGirlCharacter::AAnimeGirlCharacter()
 {
@@ -14,6 +15,18 @@ AAnimeGirlCharacter::AAnimeGirlCharacter()
 void AAnimeGirlCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (DefaultAbilitySet)
+	{
+		for (auto& Ability : DefaultAbilitySet->TaggedAbilities)
+		{
+			if (Ability.Ability && Ability.InputTag.IsValid())
+			{
+				FGameplayAbilitySpec AbilitySpec(Ability.Ability);
+				ASC->GiveAbility(AbilitySpec);
+			}
+		}
+	}
 }
 
 void AAnimeGirlCharacter::Tick(float DeltaTime)
@@ -42,14 +55,37 @@ UAbilitySystemComponent* AAnimeGirlCharacter::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGameplayTag tag)
+void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
-	FString Name = tag.GetTagName().ToString();
+	FString Name = Tag.GetTagName().ToString();
 	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Pressed: %s"), *Name));
+
+	// TODO: 나중에 바꿔야 할듯?
+	if (DefaultAbilitySet)
+	{
+		TSubclassOf<UGameplayAbility> Ability = DefaultAbilitySet->FindAbilityClassByTag(Tag);
+		if (Ability)
+		{
+			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Ability);
+			ASC->TryActivateAbility(Spec->Handle);
+		}
+		
+	}
 }
 
-void AAnimeGirlCharacter::InputReleased(const FInputActionValue& InputValue, FGameplayTag tag)
+void AAnimeGirlCharacter::InputReleased(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
-	FString Name = tag.GetTagName().ToString();
+	FString Name = Tag.GetTagName().ToString();
 	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Released: %s"), *Name));
+
+	// TODO: 나중에 바꿔야 할듯?
+	if (DefaultAbilitySet)
+	{
+		TSubclassOf<UGameplayAbility> Ability = DefaultAbilitySet->FindAbilityClassByTag(Tag);
+		if (Ability)
+		{
+			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Ability);
+			ASC->CancelAbilityHandle(Spec->Handle);
+		}
+	}
 }

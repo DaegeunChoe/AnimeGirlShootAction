@@ -32,6 +32,8 @@ class ANIMEGIRLSHOOTACTION_API UAbilitySet : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	TSubclassOf<UGameplayAbility> FindAbilityClassByTag(const FGameplayTag& InputTag) const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "Ability"))
-	TArray<FTaggedAbility> TaggedAbility;
+	TArray<FTaggedAbility> TaggedAbilities;
 };

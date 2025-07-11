@@ -5,6 +5,7 @@
 #include "AbilitySystemInterface.h"
 #include "AnimeGirlCharacter.generated.h"
 
+class UAbilitySet;
 struct FInputActionValue;
 struct FGameplayTag;
 
@@ -27,7 +28,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<UAbilitySystemComponent> ASC;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	TObjectPtr<UAbilitySet> DefaultAbilitySet;
+
 private:
-	void InputPressed(const FInputActionValue& InputValue, FGameplayTag tag);
-	void InputReleased(const FInputActionValue& InputValue, FGameplayTag tag);
+	void InputPressed(const FInputActionValue& InputValue, FGameplayTag Tag);
+	void InputReleased(const FInputActionValue& InputValue, FGameplayTag Tag);
 };
