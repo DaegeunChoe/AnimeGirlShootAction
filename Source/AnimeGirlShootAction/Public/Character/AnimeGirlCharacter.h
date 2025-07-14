@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<UAbilitySet> DefaultAbilitySet;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	TObjectPtr<UAbilitySet> DefaultPassiveAbilitySet;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	TObjectPtr<UCharacterAttributeSet> CharacterAttributeSet;
 
@@ -49,4 +52,7 @@ private:
 
 	UFUNCTION()
 	void UpdateMovementSpeed(UAttributeSet* AttributeSet, float OldValue, float NewValue);
+
+	// low-level utility functions...
+	void GiveAbilitesWithTag(const UAbilitySet* AbilitySet, bool isPassive);
 };

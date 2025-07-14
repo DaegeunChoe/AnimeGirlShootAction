@@ -20,18 +20,8 @@ void AAnimeGirlCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (DefaultAbilitySet)
-	{
-		for (auto& Ability : DefaultAbilitySet->TaggedAbilities)
-		{
-			if (Ability.Ability && Ability.InputTag.IsValid())
-			{
-				FGameplayAbilitySpec AbilitySpec(Ability.Ability);
-				ASC->GiveAbility(AbilitySpec);
-			}
-		}
-	}
-
+	GiveAbilitesWithTag(DefaultAbilitySet, false);
+	GiveAbilitesWithTag(DefaultPassiveAbilitySet, true);
 
 	if (CharacterAttributeSet)
 	{
@@ -146,4 +136,24 @@ void AAnimeGirlCharacter::UpdateMovementSpeed(UAttributeSet* AttributeSet, float
 	{
 		MC->MaxWalkSpeed = NewValue;
 	}
+}
+
+void AAnimeGirlCharacter::GiveAbilitesWithTag(const UAbilitySet* AbilitySet, bool isPassive)
+{
+	if (AbilitySet)
+	{
+		for (auto& TaggedAbility : AbilitySet->TaggedAbilities)
+		{
+			if (TaggedAbility.IsValid())
+			{
+				FGameplayAbilitySpec AbilitySpec(TaggedAbility.Ability);
+				ASC->GiveAbility(AbilitySpec);
+				if (isPassive)
+				{
+					ASC->TryActivateAbility(AbilitySpec.Handle);
+				}
+			}
+		}
+	}
+
 }
