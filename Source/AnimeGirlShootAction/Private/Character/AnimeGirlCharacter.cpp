@@ -42,11 +42,21 @@ void AAnimeGirlCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	if (AnimeGirlInputComponent && AnimeGirlPlayerController)
 	{
-		AnimeGirlInputComponent->BindTaggedActions(
-			AnimeGirlPlayerController->InputConfig,
-			this,
-			&AAnimeGirlCharacter::InputPressed,
-			&AAnimeGirlCharacter::InputReleased);
+		if (UInputConfig* InputConfig = AnimeGirlPlayerController->InputConfig)
+		{
+			// Abilities
+			AnimeGirlInputComponent->BindTaggedActions(InputConfig, this, &AAnimeGirlCharacter::InputPressed, &AAnimeGirlCharacter::InputReleased);
+
+			// NativeActions
+			if (auto MoveAction = InputConfig->MoveAction; MoveAction.IsValid())
+			{
+				AnimeGirlInputComponent->BindAction(MoveAction.InputAction, ETriggerEvent::Triggered, this, &AAnimeGirlCharacter::CharacterMove, MoveAction.InputTag);
+			}
+			if (auto LookAction = InputConfig->LookAction; LookAction.IsValid())
+			{
+				AnimeGirlInputComponent->BindAction(LookAction.InputAction, ETriggerEvent::Triggered, this, &AAnimeGirlCharacter::CharacterLook, LookAction.InputTag);
+			}
+		}
 	}
 }
 
@@ -55,37 +65,65 @@ UAbilitySystemComponent* AAnimeGirlCharacter::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGameplayTag Tag)
+void AAnimeGirlCharacter::CharacterMove(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
-	FString Name = Tag.GetTagName().ToString();
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Pressed: %s"), *Name));
-
-	// TODO: 나중에 바꿔야 할듯?
-	if (DefaultAbilitySet)
+	FVector2D MoveVector = InputValue.Get<FVector2D>();
+	if (!MoveVector.IsNearlyZero())
 	{
-		TSubclassOf<UGameplayAbility> Ability = DefaultAbilitySet->FindAbilityClassByTag(Tag);
-		if (Ability)
-		{
-			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Ability);
-			ASC->TryActivateAbility(Spec->Handle);
-		}
-		
+		FVector ForwardVector = GetActorForwardVector() * MoveVector.X;
+		FVector RightVector = GetActorRightVector() * MoveVector.Y;
+		AddMovementInput(ForwardVector + RightVector);
 	}
 }
 
-void AAnimeGirlCharacter::InputReleased(const FInputActionValue& InputValue, FGameplayTag Tag)
+void AAnimeGirlCharacter::CharacterLook(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
-	FString Name = Tag.GetTagName().ToString();
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Released: %s"), *Name));
+	FVector2D LookVector = InputValue.Get<FVector2D>();
+	if (!LookVector.IsNearlyZero())
+	{
+		AddControllerYawInput(LookVector.X);
+		AddControllerPitchInput(LookVector.Y);
+	}
+}
 
-	// TODO: 나중에 바꿔야 할듯?
+void AAnimeGirlCharacter::InputPressed(FGameplayTag Tag)
+{
+	//FString Name = Tag.GetTagName().ToString();
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Pressed: %s"), *Name));
+	
 	if (DefaultAbilitySet)
 	{
-		TSubclassOf<UGameplayAbility> Ability = DefaultAbilitySet->FindAbilityClassByTag(Tag);
-		if (Ability)
+		for (auto& Pair : DefaultAbilitySet->TaggedAbilities)
 		{
-			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Ability);
-			ASC->CancelAbilityHandle(Spec->Handle);
+			if (Pair.InputTag.IsValid() && Pair.InputTag.MatchesTagExact(Tag))
+			{
+				if (Pair.Ability)
+				{
+					FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Pair.Ability);
+					ASC->TryActivateAbility(Spec->Handle);
+				}
+			}
+		}
+	}
+}
+
+void AAnimeGirlCharacter::InputReleased(FGameplayTag Tag)
+{
+	//FString Name = Tag.GetTagName().ToString();
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Released: %s"), *Name));
+
+	if (DefaultAbilitySet)
+	{
+		for (auto& Pair : DefaultAbilitySet->TaggedAbilities)
+		{
+			if (Pair.InputTag.IsValid() && Pair.InputTag.MatchesTagExact(Tag))
+			{
+				if (Pair.Ability)
+				{
+					FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Pair.Ability);
+					ASC->CancelAbilityHandle(Spec->Handle);
+				}
+			}
 		}
 	}
 }

@@ -10,7 +10,7 @@ const UInputAction* UInputConfig::FindInputActionByTag(const FGameplayTag& Input
 {
 	for (auto& TaggedInputAction : TaggedInputActions)
 	{
-		if (TaggedInputAction.InputAction && TaggedInputAction.InputTag == InputTag)
+		if (TaggedInputAction.IsValid())
 		{
 			return TaggedInputAction.InputAction;
 		}

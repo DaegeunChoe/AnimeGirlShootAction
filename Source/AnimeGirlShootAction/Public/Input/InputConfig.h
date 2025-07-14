@@ -15,6 +15,11 @@ struct FTaggedInputAction
 public:
 	FTaggedInputAction();
 
+	bool IsValid() const
+	{
+		return (InputAction != nullptr) && (InputTag.IsValid());
+	}
+
 	UPROPERTY(EditDefaultsOnly)
 	const UInputAction* InputAction;
 
@@ -33,4 +38,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputAction"))
 	TArray<FTaggedInputAction> TaggedInputActions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputAction"))
+	FTaggedInputAction MoveAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputAction"))
+	FTaggedInputAction LookAction;
 };
