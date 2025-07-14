@@ -6,6 +6,7 @@
 #include "AnimeGirlCharacter.generated.h"
 
 class UAbilitySet;
+class UCharacterAttributeSet;
 struct FInputActionValue;
 struct FGameplayTag;
 
@@ -30,6 +31,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<UAbilitySet> DefaultAbilitySet;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	TObjectPtr<UCharacterAttributeSet> CharacterAttributeSet;
 
 
 	// Native Actions: Move and Look

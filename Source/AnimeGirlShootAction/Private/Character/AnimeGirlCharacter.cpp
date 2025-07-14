@@ -1,5 +1,6 @@
 #include "Character/AnimeGirlCharacter.h"
 #include "Character/AnimeGirlPlayerController.h"
+#include "Character/CharacterAttributeSet.h"
 #include "Input/AnimeGirlEnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "Ability/AbilitySet.h"
@@ -10,6 +11,7 @@ AAnimeGirlCharacter::AAnimeGirlCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
+	CharacterAttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>(TEXT("AttributeSet"));
 }
 
 void AAnimeGirlCharacter::BeginPlay()
