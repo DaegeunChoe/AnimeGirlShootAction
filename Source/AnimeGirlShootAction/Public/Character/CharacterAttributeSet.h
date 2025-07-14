@@ -12,6 +12,12 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FAttributeChangedEvent,
+	UAttributeSet*, AttributeSet,
+	float, OldValue,
+	float, NewValue);
+
 UCLASS()
 class ANIMEGIRLSHOOTACTION_API UCharacterAttributeSet : public UAttributeSet
 {
@@ -19,6 +25,8 @@ class ANIMEGIRLSHOOTACTION_API UCharacterAttributeSet : public UAttributeSet
 
 public:
 	UCharacterAttributeSet();
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData MaxStamina;
@@ -32,8 +40,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData Health;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGameplayAttributeData MovementSpeed;
+
+	UPROPERTY(BlueprintAssignable)
+	FAttributeChangedEvent OnStaminaChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FAttributeChangedEvent OnMovementSpeedChanged;
+
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxStamina)
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Stamina)
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxHealth)
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Health)
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MovementSpeed)
 };

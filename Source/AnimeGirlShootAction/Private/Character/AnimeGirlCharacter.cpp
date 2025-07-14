@@ -5,6 +5,8 @@
 #include "AbilitySystemComponent.h"
 #include "Ability/AbilitySet.h"
 #include "Abilities/GameplayAbility.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AttributeSet.h"
 
 AAnimeGirlCharacter::AAnimeGirlCharacter()
 {
@@ -28,6 +30,13 @@ void AAnimeGirlCharacter::BeginPlay()
 				ASC->GiveAbility(AbilitySpec);
 			}
 		}
+	}
+
+
+	if (CharacterAttributeSet)
+	{
+		CharacterAttributeSet->OnMovementSpeedChanged.AddDynamic(this, &AAnimeGirlCharacter::UpdateMovementSpeed);
+		CharacterAttributeSet->OnMovementSpeedChanged.Broadcast(CharacterAttributeSet, 0, CharacterAttributeSet->GetMovementSpeed());
 	}
 }
 
@@ -127,5 +136,14 @@ void AAnimeGirlCharacter::InputReleased(FGameplayTag Tag)
 				}
 			}
 		}
+	}
+}
+
+void AAnimeGirlCharacter::UpdateMovementSpeed(UAttributeSet* AttributeSet, float OldValue, float NewValue)
+{
+	UCharacterMovementComponent* MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (MC)
+	{
+		MC->MaxWalkSpeed = NewValue;
 	}
 }
