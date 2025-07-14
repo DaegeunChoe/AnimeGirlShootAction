@@ -52,7 +52,7 @@ void AAnimeGirlCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 			{
 				AnimeGirlInputComponent->BindAction(MoveAction.InputAction, ETriggerEvent::Triggered, this, &AAnimeGirlCharacter::CharacterMove, MoveAction.InputTag);
 			}
-			if (auto LookAction = InputConfig->MoveAction; LookAction.IsValid())
+			if (auto LookAction = InputConfig->LookAction; LookAction.IsValid())
 			{
 				AnimeGirlInputComponent->BindAction(LookAction.InputAction, ETriggerEvent::Triggered, this, &AAnimeGirlCharacter::CharacterLook, LookAction.InputTag);
 			}
@@ -67,10 +67,23 @@ UAbilitySystemComponent* AAnimeGirlCharacter::GetAbilitySystemComponent() const
 
 void AAnimeGirlCharacter::CharacterMove(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
+	FVector2D MoveVector = InputValue.Get<FVector2D>();
+	if (!MoveVector.IsNearlyZero())
+	{
+		FVector ForwardVector = GetActorForwardVector() * MoveVector.X;
+		FVector RightVector = GetActorRightVector() * MoveVector.Y;
+		AddMovementInput(ForwardVector + RightVector);
+	}
 }
 
 void AAnimeGirlCharacter::CharacterLook(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
+	FVector2D LookVector = InputValue.Get<FVector2D>();
+	if (!LookVector.IsNearlyZero())
+	{
+		AddControllerYawInput(LookVector.X);
+		AddControllerPitchInput(LookVector.Y);
+	}
 }
 
 void AAnimeGirlCharacter::InputPressed(FGameplayTag Tag)
