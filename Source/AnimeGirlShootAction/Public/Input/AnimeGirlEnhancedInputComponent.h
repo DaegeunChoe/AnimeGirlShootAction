@@ -24,17 +24,17 @@ void UAnimeGirlEnhancedInputComponent::BindTaggedActions(const UInputConfig* Inp
 {
 	check(InputConfig);
 
-	for (auto& Action : InputConfig->TaggedInputActions)
+	for (auto& TaggedAction : InputConfig->TaggedInputActions)
 	{
-		if (Action.InputAction && Action.InputTag.IsValid())
+		if (TaggedAction.IsValid())
 		{
 			if (PressedFunc)
 			{
-				BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, Action.InputTag);
+				BindAction(TaggedAction.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, TaggedAction.InputTag);
 			}
 			if (ReleasedFunc)
 			{
-				BindAction(Action.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, Action.InputTag);
+				BindAction(TaggedAction.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, TaggedAction.InputTag);
 			}
 		}
 	}

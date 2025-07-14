@@ -31,7 +31,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<UAbilitySet> DefaultAbilitySet;
 
+
+	// Native Actions: Move and Look
+	UFUNCTION()
+	void CharacterMove(const FInputActionValue& InputValue, FGameplayTag Tag);
+
+	UFUNCTION()
+	void CharacterLook(const FInputActionValue& InputValue, FGameplayTag Tag);
+
 private:
-	void InputPressed(const FInputActionValue& InputValue, FGameplayTag Tag);
-	void InputReleased(const FInputActionValue& InputValue, FGameplayTag Tag);
+	void InputPressed(FGameplayTag Tag);
+	void InputReleased(FGameplayTag Tag);
 };

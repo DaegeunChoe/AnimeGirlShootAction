@@ -42,11 +42,21 @@ void AAnimeGirlCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	if (AnimeGirlInputComponent && AnimeGirlPlayerController)
 	{
-		AnimeGirlInputComponent->BindTaggedActions(
-			AnimeGirlPlayerController->InputConfig,
-			this,
-			&AAnimeGirlCharacter::InputPressed,
-			&AAnimeGirlCharacter::InputReleased);
+		if (UInputConfig* InputConfig = AnimeGirlPlayerController->InputConfig)
+		{
+			// Abilities
+			AnimeGirlInputComponent->BindTaggedActions(InputConfig, this, &AAnimeGirlCharacter::InputPressed, &AAnimeGirlCharacter::InputReleased);
+
+			// NativeActions
+			if (auto MoveAction = InputConfig->MoveAction; MoveAction.IsValid())
+			{
+				AnimeGirlInputComponent->BindAction(MoveAction.InputAction, ETriggerEvent::Triggered, this, &AAnimeGirlCharacter::CharacterMove, MoveAction.InputTag);
+			}
+			if (auto LookAction = InputConfig->MoveAction; LookAction.IsValid())
+			{
+				AnimeGirlInputComponent->BindAction(LookAction.InputAction, ETriggerEvent::Triggered, this, &AAnimeGirlCharacter::CharacterLook, LookAction.InputTag);
+			}
+		}
 	}
 }
 
@@ -55,7 +65,15 @@ UAbilitySystemComponent* AAnimeGirlCharacter::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGameplayTag Tag)
+void AAnimeGirlCharacter::CharacterMove(const FInputActionValue& InputValue, FGameplayTag Tag)
+{
+}
+
+void AAnimeGirlCharacter::CharacterLook(const FInputActionValue& InputValue, FGameplayTag Tag)
+{
+}
+
+void AAnimeGirlCharacter::InputPressed(FGameplayTag Tag)
 {
 	//FString Name = Tag.GetTagName().ToString();
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Pressed: %s"), *Name));
@@ -76,7 +94,7 @@ void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGam
 	}
 }
 
-void AAnimeGirlCharacter::InputReleased(const FInputActionValue& InputValue, FGameplayTag Tag)
+void AAnimeGirlCharacter::InputReleased(FGameplayTag Tag)
 {
 	//FString Name = Tag.GetTagName().ToString();
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Released: %s"), *Name));
