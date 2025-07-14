@@ -57,35 +57,42 @@ UAbilitySystemComponent* AAnimeGirlCharacter::GetAbilitySystemComponent() const
 
 void AAnimeGirlCharacter::InputPressed(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
-	FString Name = Tag.GetTagName().ToString();
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Pressed: %s"), *Name));
-
-	// TODO: 나중에 바꿔야 할듯?
+	//FString Name = Tag.GetTagName().ToString();
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Pressed: %s"), *Name));
+	
 	if (DefaultAbilitySet)
 	{
-		TSubclassOf<UGameplayAbility> Ability = DefaultAbilitySet->FindAbilityClassByTag(Tag);
-		if (Ability)
+		for (auto& Pair : DefaultAbilitySet->TaggedAbilities)
 		{
-			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Ability);
-			ASC->TryActivateAbility(Spec->Handle);
+			if (Pair.InputTag.IsValid() && Pair.InputTag.MatchesTagExact(Tag))
+			{
+				if (Pair.Ability)
+				{
+					FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Pair.Ability);
+					ASC->TryActivateAbility(Spec->Handle);
+				}
+			}
 		}
-		
 	}
 }
 
 void AAnimeGirlCharacter::InputReleased(const FInputActionValue& InputValue, FGameplayTag Tag)
 {
-	FString Name = Tag.GetTagName().ToString();
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Released: %s"), *Name));
+	//FString Name = Tag.GetTagName().ToString();
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Released: %s"), *Name));
 
-	// TODO: 나중에 바꿔야 할듯?
 	if (DefaultAbilitySet)
 	{
-		TSubclassOf<UGameplayAbility> Ability = DefaultAbilitySet->FindAbilityClassByTag(Tag);
-		if (Ability)
+		for (auto& Pair : DefaultAbilitySet->TaggedAbilities)
 		{
-			FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Ability);
-			ASC->CancelAbilityHandle(Spec->Handle);
+			if (Pair.InputTag.IsValid() && Pair.InputTag.MatchesTagExact(Tag))
+			{
+				if (Pair.Ability)
+				{
+					FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(Pair.Ability);
+					ASC->CancelAbilityHandle(Spec->Handle);
+				}
+			}
 		}
 	}
 }
