@@ -30,7 +30,7 @@ void UAnimeGirlEnhancedInputComponent::BindTaggedActions(const UInputConfig* Inp
 		{
 			if (PressedFunc)
 			{
-				BindAction(TaggedAction.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, TaggedAction.InputTag);
+				BindAction(TaggedAction.InputAction, ETriggerEvent::Started, Object, PressedFunc, TaggedAction.InputTag);
 			}
 			if (ReleasedFunc)
 			{

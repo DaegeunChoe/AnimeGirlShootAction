@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
+#include "Abilities/GameplayAbility.h"
 #include "AbilitySet.generated.h"
 
 class UGameplayAbility;
@@ -14,6 +15,11 @@ struct FTaggedAbility
 
 public:
 	FTaggedAbility();
+
+	bool IsValid() const
+	{
+		return Ability != nullptr;
+	}
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayAbility> Ability;

@@ -1,31 +1,32 @@
 #include "Character/AnimeGirlCharacter.h"
 #include "Character/AnimeGirlPlayerController.h"
+#include "Character/CharacterAttributeSet.h"
 #include "Input/AnimeGirlEnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "Ability/AbilitySet.h"
 #include "Abilities/GameplayAbility.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AttributeSet.h"
 
 AAnimeGirlCharacter::AAnimeGirlCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
+	CharacterAttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>(TEXT("AttributeSet"));
 }
 
 void AAnimeGirlCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (DefaultAbilitySet)
+	GiveAbilitesWithTag(DefaultAbilitySet, false);
+	GiveAbilitesWithTag(DefaultPassiveAbilitySet, true);
+
+	if (CharacterAttributeSet)
 	{
-		for (auto& Ability : DefaultAbilitySet->TaggedAbilities)
-		{
-			if (Ability.Ability && Ability.InputTag.IsValid())
-			{
-				FGameplayAbilitySpec AbilitySpec(Ability.Ability);
-				ASC->GiveAbility(AbilitySpec);
-			}
-		}
+		CharacterAttributeSet->OnMovementSpeedChanged.AddDynamic(this, &AAnimeGirlCharacter::UpdateMovementSpeed);
+		CharacterAttributeSet->OnMovementSpeedChanged.Broadcast(CharacterAttributeSet, 0, CharacterAttributeSet->GetMovementSpeed());
 	}
 }
 
@@ -126,4 +127,33 @@ void AAnimeGirlCharacter::InputReleased(FGameplayTag Tag)
 			}
 		}
 	}
+}
+
+void AAnimeGirlCharacter::UpdateMovementSpeed(UAttributeSet* AttributeSet, float OldValue, float NewValue)
+{
+	UCharacterMovementComponent* MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (MC)
+	{
+		MC->MaxWalkSpeed = NewValue;
+	}
+}
+
+void AAnimeGirlCharacter::GiveAbilitesWithTag(const UAbilitySet* AbilitySet, bool isPassive)
+{
+	if (AbilitySet)
+	{
+		for (auto& TaggedAbility : AbilitySet->TaggedAbilities)
+		{
+			if (TaggedAbility.IsValid())
+			{
+				FGameplayAbilitySpec AbilitySpec(TaggedAbility.Ability);
+				ASC->GiveAbility(AbilitySpec);
+				if (isPassive)
+				{
+					ASC->TryActivateAbility(AbilitySpec.Handle);
+				}
+			}
+		}
+	}
+
 }
